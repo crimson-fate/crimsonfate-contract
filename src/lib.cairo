@@ -1,5 +1,6 @@
 pub mod systems {
     pub mod game;
+    pub mod gem;
 }
 
 pub mod utils;

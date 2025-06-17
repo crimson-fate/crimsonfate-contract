@@ -15,18 +15,10 @@ pub trait IGameSystem<TState> {
     fn open_chest(ref self: TState, key: Array<felt252>);
 }
 
-#[starknet::interface]
-pub trait AccountABI<TState> {
-    fn is_valid_signature(self: @TState, hash: felt252, signature: Array<felt252>) -> felt252;
-
-    // ISRC6CamelOnly
-    fn isValidSignature(self: @TState, hash: felt252, signature: Array<felt252>) -> felt252;
-}
-
 #[dojo::contract]
 pub mod GameSystem {
     use core::num::traits::Zero;
-    use starknet::{get_caller_address, get_contract_address, get_block_timestamp, get_tx_info};
+    use starknet::{get_caller_address, get_block_timestamp, get_tx_info};
     use crimson_fate::utils::signature::{
         compute_message_receive_skill_hash, compute_message_receive_angel_or_evil_hash,
     };
@@ -45,7 +37,7 @@ pub mod GameSystem {
     use crimson_fate::models::valor::{ValorProgressCounter, ValorProgress};
     use crimson_fate::constants::{
         ReceiveSkillParams, DEFAULT_NS, MAX_INDEX_OF_COMMON_SKILL, MAX_INDEX_OF_EVIL_SKILL,
-        ReceiveAngelOrEvilParams,
+        ReceiveAngelOrEvilParams, SYSTEM_VERSION, AccountABIDispatcher, AccountABIDispatcherTrait
     };
     use starknet::storage::{StoragePointerReadAccess, StoragePointerWriteAccess};
     use dojo::model::{ModelStorage, ModelValueStorage};
@@ -54,7 +46,7 @@ pub mod GameSystem {
     use cartridge_vrf::{Source, IVrfProviderDispatcherTrait, IVrfProviderDispatcher};
     use core::hash::{HashStateTrait, HashStateExTrait};
     use core::poseidon::PoseidonTrait;
-    use super::{AccountABIDispatcher, AccountABIDispatcherTrait, IGameSystem, ContractAddress};
+    use super::{IGameSystem, ContractAddress};
 
     #[storage]
     struct Storage {
@@ -118,7 +110,7 @@ pub mod GameSystem {
     #[abi(embed_v0)]
     impl GameSystem of IGameSystem<ContractState> {
         fn initialize(
-            ref self: ContractState, prover_address: ContractAddress, vrf_address: ContractAddress
+            ref self: ContractState, prover_address: ContractAddress, vrf_address: ContractAddress,
         ) {
             let mut world = self.world(@DEFAULT_NS());
 
@@ -126,7 +118,7 @@ pub mod GameSystem {
             let caller = get_caller_address();
             let selector = world.resource_selector(@"Prover");
             assert(world.dispatcher.is_owner(selector, caller), 'only owner of model');
-            let mut prover: Prover = world.read_model(get_contract_address());
+            let mut prover: Prover = world.read_model(SYSTEM_VERSION);
 
             assert(prover.address.is_zero(), 'prover already initialized');
             prover.address = prover_address;
@@ -137,7 +129,7 @@ pub mod GameSystem {
             let mut world = self.world(@DEFAULT_NS());
 
             let player = get_caller_address();
-            let prover: Prover = world.read_model(get_contract_address());
+            let prover: Prover = world.read_model(SYSTEM_VERSION);
             let receive_skill = ReceiveSkillParams {
                 player, salt_nonce: salt_nonce, is_new_game: true, is_evil: false,
             };
@@ -199,7 +191,7 @@ pub mod GameSystem {
             let mut world = self.world(@DEFAULT_NS());
 
             let player = get_caller_address();
-            let prover: Prover = world.read_model(get_contract_address());
+            let prover: Prover = world.read_model(SYSTEM_VERSION);
 
             let receive_skill = ReceiveSkillParams {
                 player: player, salt_nonce: salt_nonce, is_new_game: false, is_evil: false,
@@ -290,7 +282,7 @@ pub mod GameSystem {
             let mut world = self.world(@DEFAULT_NS());
 
             let player = get_caller_address();
-            let prover: Prover = world.read_model(get_contract_address());
+            let prover: Prover = world.read_model(SYSTEM_VERSION);
 
             let receive_angel_or_evil = ReceiveAngelOrEvilParams {
                 player: player, salt_nonce: salt_nonce,
@@ -446,12 +438,12 @@ pub mod GameSystem {
             let caller = get_caller_address();
             let selector = world.resource_selector(@"Prover");
             assert(world.dispatcher.is_owner(selector, caller), 'only owner of model');
-            let prover = Prover { system: get_contract_address(), address: prover };
+            let prover = Prover { system: SYSTEM_VERSION, address: prover };
             world.write_model(@prover);
         }
 
         fn request_valor(
-            ref self: ContractState, duration: u64, salt_nonce: u64, key: Array<felt252>
+            ref self: ContractState, duration: u64, salt_nonce: u64, key: Array<felt252>,
         ) {
             assert(duration == 2 || duration == 4 || duration == 8, 'invalid duration');
             let mut world = self.world(@DEFAULT_NS());
@@ -461,9 +453,9 @@ pub mod GameSystem {
             let mut valor_progress: ValorProgress = world
                 .read_model((caller, valor_progress_counter.counter));
 
-            if valor_progress_counter.counter > 0 {
-                assert(valor_progress.is_claimed, 'valor have not returned');
-            }
+            // if valor_progress_counter.counter > 0 {
+            //     assert(valor_progress.is_claimed, 'valor have not returned');
+            // }
 
             // TODO verify key
 
@@ -503,8 +495,8 @@ pub mod GameSystem {
             world
                 .emit_event(
                     @BribeValor {
-                        player: caller, progress_id: valor_progress.id, value: result.into()
-                    }
+                        player: caller, progress_id: valor_progress.id, value: result.into(),
+                    },
                 );
         }
 

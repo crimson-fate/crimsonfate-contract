@@ -1,8 +1,8 @@
 {
   "world": {
     "class_hash": "0x45575a88cc5cef1e444c77ce60b7b4c9e73a01cbbe20926d5a4c72a94011410",
-    "address": "0x2fc68368bfaba61c0097121a4ce923b6182df0d72450a1f883b955eba1ef462",
-    "seed": "cf_10",
+    "address": "0x2e7f57a671b3bc178985db5598c2a0bd68c2b61b1d9afed5e050c12c1d27592",
+    "seed": "cf_09",
     "name": "Crimson Fate",
     "entrypoints": [
       "uuid",
@@ -1252,8 +1252,8 @@
   },
   "contracts": [
     {
-      "address": "0x52e99d9378cfeb790337fefa6b12117978d1feb6c870709c8019fca6637807e",
-      "class_hash": "0x5ec2ae51a42fedee9ff261847a46339d1e23ba941ff6725f2aadf04d808238f",
+      "address": "0x3e5cbe6b732db0fd8bb397f5653e2fa08db6027b487ed63329a06b783d0d766",
+      "class_hash": "0x1bd78bfcd299160c460586ef351f3b69e2fdca1cd201c99862816a3a608a3a2",
       "abi": [
         {
           "type": "impl",
@@ -1636,228 +1636,6 @@
         "open_chest",
         "upgrade"
       ]
-    },
-    {
-      "address": "0x338aa8bd6b5bf02af7d2619c1f0fc45bda8d61708817cb6ec257f0857885fc7",
-      "class_hash": "0x127d57c859e6fccb6d08b7f397dbcbdf2cc599cdfabfd872fc567b7a725626d",
-      "abi": [
-        {
-          "type": "impl",
-          "name": "Gem__ContractImpl",
-          "interface_name": "dojo::contract::interface::IContract"
-        },
-        {
-          "type": "interface",
-          "name": "dojo::contract::interface::IContract",
-          "items": []
-        },
-        {
-          "type": "impl",
-          "name": "Gem__DeployedContractImpl",
-          "interface_name": "dojo::meta::interface::IDeployedResource"
-        },
-        {
-          "type": "struct",
-          "name": "core::byte_array::ByteArray",
-          "members": [
-            {
-              "name": "data",
-              "type": "core::array::Array::<core::bytes_31::bytes31>"
-            },
-            {
-              "name": "pending_word",
-              "type": "core::felt252"
-            },
-            {
-              "name": "pending_word_len",
-              "type": "core::integer::u32"
-            }
-          ]
-        },
-        {
-          "type": "interface",
-          "name": "dojo::meta::interface::IDeployedResource",
-          "items": [
-            {
-              "type": "function",
-              "name": "dojo_name",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::byte_array::ByteArray"
-                }
-              ],
-              "state_mutability": "view"
-            }
-          ]
-        },
-        {
-          "type": "impl",
-          "name": "GemImpl",
-          "interface_name": "crimson_fate::systems::gem::IGem"
-        },
-        {
-          "type": "struct",
-          "name": "core::integer::u256",
-          "members": [
-            {
-              "name": "low",
-              "type": "core::integer::u128"
-            },
-            {
-              "name": "high",
-              "type": "core::integer::u128"
-            }
-          ]
-        },
-        {
-          "type": "interface",
-          "name": "crimson_fate::systems::gem::IGem",
-          "items": [
-            {
-              "type": "function",
-              "name": "claim_gem",
-              "inputs": [
-                {
-                  "name": "amount",
-                  "type": "core::integer::u256"
-                },
-                {
-                  "name": "salt_nonce",
-                  "type": "core::integer::u64"
-                },
-                {
-                  "name": "key",
-                  "type": "core::array::Array::<core::felt252>"
-                }
-              ],
-              "outputs": [],
-              "state_mutability": "external"
-            }
-          ]
-        },
-        {
-          "type": "function",
-          "name": "dojo_init",
-          "inputs": [],
-          "outputs": [],
-          "state_mutability": "view"
-        },
-        {
-          "type": "impl",
-          "name": "WorldProviderImpl",
-          "interface_name": "dojo::contract::components::world_provider::IWorldProvider"
-        },
-        {
-          "type": "struct",
-          "name": "dojo::world::iworld::IWorldDispatcher",
-          "members": [
-            {
-              "name": "contract_address",
-              "type": "core::starknet::contract_address::ContractAddress"
-            }
-          ]
-        },
-        {
-          "type": "interface",
-          "name": "dojo::contract::components::world_provider::IWorldProvider",
-          "items": [
-            {
-              "type": "function",
-              "name": "world_dispatcher",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "dojo::world::iworld::IWorldDispatcher"
-                }
-              ],
-              "state_mutability": "view"
-            }
-          ]
-        },
-        {
-          "type": "impl",
-          "name": "UpgradeableImpl",
-          "interface_name": "dojo::contract::components::upgradeable::IUpgradeable"
-        },
-        {
-          "type": "interface",
-          "name": "dojo::contract::components::upgradeable::IUpgradeable",
-          "items": [
-            {
-              "type": "function",
-              "name": "upgrade",
-              "inputs": [
-                {
-                  "name": "new_class_hash",
-                  "type": "core::starknet::class_hash::ClassHash"
-                }
-              ],
-              "outputs": [],
-              "state_mutability": "external"
-            }
-          ]
-        },
-        {
-          "type": "constructor",
-          "name": "constructor",
-          "inputs": []
-        },
-        {
-          "type": "event",
-          "name": "dojo::contract::components::upgradeable::upgradeable_cpt::Upgraded",
-          "kind": "struct",
-          "members": [
-            {
-              "name": "class_hash",
-              "type": "core::starknet::class_hash::ClassHash",
-              "kind": "data"
-            }
-          ]
-        },
-        {
-          "type": "event",
-          "name": "dojo::contract::components::upgradeable::upgradeable_cpt::Event",
-          "kind": "enum",
-          "variants": [
-            {
-              "name": "Upgraded",
-              "type": "dojo::contract::components::upgradeable::upgradeable_cpt::Upgraded",
-              "kind": "nested"
-            }
-          ]
-        },
-        {
-          "type": "event",
-          "name": "dojo::contract::components::world_provider::world_provider_cpt::Event",
-          "kind": "enum",
-          "variants": []
-        },
-        {
-          "type": "event",
-          "name": "crimson_fate::systems::gem::Gem::Event",
-          "kind": "enum",
-          "variants": [
-            {
-              "name": "UpgradeableEvent",
-              "type": "dojo::contract::components::upgradeable::upgradeable_cpt::Event",
-              "kind": "nested"
-            },
-            {
-              "name": "WorldProviderEvent",
-              "type": "dojo::contract::components::world_provider::world_provider_cpt::Event",
-              "kind": "nested"
-            }
-          ]
-        }
-      ],
-      "init_calldata": [],
-      "tag": "cf-Gem",
-      "selector": "0x4288c7d0f956b3941cd8202b023b1436d8da775712c3341dccf2e10b8cb091",
-      "systems": [
-        "claim_gem",
-        "upgrade"
-      ]
     }
   ],
   "models": [
@@ -1881,7 +1659,7 @@
     },
     {
       "members": [],
-      "class_hash": "0x5d9d2510e1b60c31e0df157a9b4f8f5b1403110a1af2c2b4e663941d3a772ea",
+      "class_hash": "0x559132d2cf595192195c15bafcfa0d1e595958212195aa9b71a1b28de778736",
       "tag": "cf-Prover",
       "selector": "0x507230c43b9622ae3ced2fe29d4987cf1446231f11815932e4e370c1b5c01d5"
     },

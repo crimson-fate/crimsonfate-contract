@@ -12,6 +12,6 @@ pub struct UsedSignature {
 #[dojo::model]
 pub struct Prover {
     #[key]
-    pub system: ContractAddress,
+    pub system: felt252,
     pub address: ContractAddress,
 }
