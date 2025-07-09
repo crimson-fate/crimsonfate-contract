@@ -20,7 +20,7 @@ pub mod GameSystem {
     use core::num::traits::Zero;
     use starknet::{get_caller_address, get_block_timestamp, get_tx_info};
     use crimson_fate::utils::signature::{
-        compute_message_receive_skill_hash, compute_message_receive_angel_or_evil_hash,
+        v0::compute_message_receive_skill_hash, v0::compute_message_receive_angel_or_evil_hash,
     };
     use crimson_fate::utils::random::{
         get_random_hash, get_random_index_of_skill, get_random_skill_from_selected_skills,

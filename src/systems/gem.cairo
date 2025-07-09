@@ -12,7 +12,7 @@ pub mod Gem {
         GemABIDispatcher, GemABIDispatcherTrait, GEM_ADDRESS_FELT
     };
     use crimson_fate::models::signature::{UsedSignature, Prover};
-    use crimson_fate::utils::signature::{compute_message_claim_gem_hash};
+    use crimson_fate::utils::signature::{v0::compute_message_claim_gem_hash};
 
     #[abi(embed_v0)]
     impl GemImpl of super::IGem<ContractState> {
