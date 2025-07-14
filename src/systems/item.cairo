@@ -5,17 +5,17 @@ trait IItemSystem<TState> {
     fn set_max_equipment_level(ref self: TState, rarity: u8, level: u8);
     fn claim_new_equipments(ref self: TState, items: Array<ReceiveEquipment>, key: Array<felt252>);
     fn claim_soul_piece_resources(
-        ref self: TState, resources: Array<ReceiveSoulPieceResource>, key: Array<felt252>
+        ref self: TState, resources: Array<ReceiveSoulPieceResource>, key: Array<felt252>,
     );
-    fn upgrade_equipment(ref self: TState, item_id: felt252, key: Array<felt252>);
+    fn upgrade_equipment(ref self: TState, item_id: felt252);
     fn reforge_equipment(
-        ref self: TState, item_id: felt252, sub_attributes: Span<ByteArray>, key: Array<felt252>
+        ref self: TState, item_id: felt252, sub_attributes: Span<ByteArray>, key: Array<felt252>,
     );
     fn merge_equipment(
         ref self: TState,
         main_item_id: felt252,
         sub_item_ids: Span<felt252>,
-        new_sub_attribute: ByteArray
+        new_sub_attribute: ByteArray,
     );
 }
 
@@ -24,10 +24,10 @@ mod ItemSystem {
     use crimson_fate::constants::{
         DEFAULT_NS, SYSTEM_VERSION, AccountABIDispatcher, AccountABIDispatcherTrait,
         ReceiveEquipment, ReceiveSoulPieceResource, GemABIDispatcher, GemABIDispatcherTrait,
-        GEM_ADDRESS_FELT
+        GEM_ADDRESS_FELT,
     };
     use crimson_fate::utils::signature::{
-        IStructHash, v1::OffChainMessageHashStruct, v1::RECEIVE_EQUIPMENT_STRUCT_TYPE_HASH
+        IStructHash, v1::OffChainMessageHashStruct, v1::RECEIVE_EQUIPMENT_STRUCT_TYPE_HASH,
     };
     use crimson_fate::utils::equipment::{get_base_attribute, get_skill_link, cal_upgrade_cost};
     use crimson_fate::utils::resource::{get_resource_type};
@@ -40,6 +40,7 @@ mod ItemSystem {
     use core::hash::{HashStateTrait, HashStateExTrait};
     use core::num::traits::Zero;
     use core::array::ArrayTrait;
+    use core::panic_with_felt252;
     use starknet::{get_caller_address, contract_address_const};
 
 
@@ -82,7 +83,7 @@ mod ItemSystem {
         }
 
         fn claim_new_equipments(
-            ref self: ContractState, items: Array<ReceiveEquipment>, key: Array<felt252>
+            ref self: ContractState, items: Array<ReceiveEquipment>, key: Array<felt252>,
         ) {
             let mut world = self.world(@DEFAULT_NS());
             let prover: Prover = world.read_model(SYSTEM_VERSION);
@@ -108,45 +109,45 @@ mod ItemSystem {
             // used_signature.is_used = true;
             // world.write_model(@used_signature);
 
-            for equip in items
-                .span() {
-                    let mut equipment: Equipment = world.read_model(*equip.id);
-                    assert(equipment.owner.is_zero(), 'equipment already claimed');
-                    equipment.owner = get_caller_address();
-                    equipment.skill_link = get_skill_link(*equip.skill_link);
-                    equipment.rarity = *equip.rarity;
-                    equipment.base_attribute = get_base_attribute(*equip.base_attribute);
-                    equipment.sub_attributes = *equip.sub_attributes;
-                    world.write_model(@equipment);
-                }
+            for equip in items.span() {
+                let mut equipment: Equipment = world.read_model(*equip.id);
+                assert(equipment.owner.is_zero(), 'equipment already claimed');
+                equipment.owner = get_caller_address();
+                equipment.skill_link = get_skill_link(*equip.skill_link);
+                equipment.rarity = *equip.rarity;
+                equipment.base_attribute = get_base_attribute(*equip.base_attribute);
+                equipment.sub_attributes = *equip.sub_attributes;
+                world.write_model(@equipment);
+            }
         }
 
         fn claim_soul_piece_resources(
-            ref self: ContractState, resources: Array<ReceiveSoulPieceResource>, key: Array<felt252>
+            ref self: ContractState,
+            resources: Array<ReceiveSoulPieceResource>,
+            key: Array<felt252>,
         ) {
             let mut world = self.world(@DEFAULT_NS());
             let caller = get_caller_address();
             let mut playerResource: PlayerSoulPieceResource = world.read_model(caller);
 
-            for rs in resources
-                .span() {
-                    let rs_type = get_resource_type(*rs.resource_type);
-                    match rs_type {
-                        ResourceType::Mechanic => { playerResource.mechanic_soul += *rs.amount; },
-                        ResourceType::Fire => { playerResource.fire_soul += *rs.amount; },
-                        ResourceType::Lightning => { playerResource.lightning_soul += *rs.amount; },
-                        ResourceType::Mythic => { playerResource.mythic_soul += *rs.amount; },
-                        ResourceType::Pollute => { playerResource.pollute_soul += *rs.amount; },
-                        ResourceType::Five_Element => {
-                            playerResource.five_element_soul += *rs.amount;
-                        },
-                    }
-                };
+            for rs in resources.span() {
+                let rs_type = get_resource_type(*rs.resource_type);
+                match rs_type {
+                    ResourceType::Mechanic => { playerResource.mechanic_soul += *rs.amount; },
+                    ResourceType::Fire => { playerResource.fire_soul += *rs.amount; },
+                    ResourceType::Lightning => { playerResource.lightning_soul += *rs.amount; },
+                    ResourceType::Mythic => { playerResource.mythic_soul += *rs.amount; },
+                    ResourceType::Pollute => { playerResource.pollute_soul += *rs.amount; },
+                    ResourceType::Five_Element => {
+                        panic_with_felt252('Five_Element not supported');
+                    },
+                }
+            };
 
             world.write_model(@playerResource);
         }
 
-        fn upgrade_equipment(ref self: ContractState, item_id: felt252, key: Array<felt252>) {
+        fn upgrade_equipment(ref self: ContractState, item_id: felt252) {
             let mut world = self.world(@DEFAULT_NS());
             let caller = get_caller_address();
             let mut equipment: Equipment = world.read_model(item_id);
@@ -183,8 +184,19 @@ mod ItemSystem {
                     playerResource.lightning_soul -= soul_cost.into();
                 },
                 EEquipmentSkill::Magic_Ring => {
-                    assert(playerResource.five_element_soul >= soul_cost.into(), 'not enough soul');
-                    playerResource.five_element_soul -= soul_cost.into();
+                    assert(
+                        playerResource.fire_soul >= soul_cost.into()
+                            && playerResource.mythic_soul >= soul_cost.into()
+                            && playerResource.mechanic_soul >= soul_cost.into()
+                            && playerResource.pollute_soul >= soul_cost.into()
+                            && playerResource.lightning_soul >= soul_cost.into(),
+                        'not enough soul',
+                    );
+                    playerResource.fire_soul -= soul_cost.into();
+                    playerResource.mythic_soul -= soul_cost.into();
+                    playerResource.mechanic_soul -= soul_cost.into();
+                    playerResource.pollute_soul -= soul_cost.into();
+                    playerResource.lightning_soul -= soul_cost.into();
                 },
             }
 
@@ -197,13 +209,27 @@ mod ItemSystem {
             ref self: ContractState,
             item_id: felt252,
             sub_attributes: Span<ByteArray>,
-            key: Array<felt252>
+            key: Array<felt252>,
         ) {
             let mut world = self.world(@DEFAULT_NS());
             let caller = get_caller_address();
             let mut equipment: Equipment = world.read_model(item_id);
             assert(equipment.owner == caller, 'only owner of equipment');
 
+            let gem_dispatcher = GemABIDispatcher {
+                contract_address: contract_address_const::<GEM_ADDRESS_FELT>(),
+            };
+            let mut gem_cost: u256 = 0;
+            match equipment.rarity {
+                0 => { gem_cost = 1000; },
+                1 => { gem_cost = 3000; },
+                2 => { gem_cost = 10_000; },
+                3 => { gem_cost = 30_000; },
+                4 => { gem_cost = 100_000; },
+                5 => { gem_cost = 300_000; },
+                _ => panic_with_felt252('invalid rarity'),
+            }
+            gem_dispatcher.burn(caller, gem_cost);
             // TODO: check signature
             equipment.sub_attributes = sub_attributes;
             world.write_model(@equipment);
@@ -213,7 +239,7 @@ mod ItemSystem {
             ref self: ContractState,
             main_item_id: felt252,
             sub_item_ids: Span<felt252>,
-            new_sub_attribute: ByteArray
+            new_sub_attribute: ByteArray,
         ) {
             let mut world = self.world(@DEFAULT_NS());
             let caller = get_caller_address();
@@ -224,11 +250,26 @@ mod ItemSystem {
                 let sub_equipment: Equipment = world.read_model(*sub_item_id);
                 assert(sub_equipment.owner == caller, 'only owner of equipment');
                 assert(
-                    sub_equipment.skill_link == main_equipment.skill_link, 'equipment not match'
+                    sub_equipment.skill_link == main_equipment.skill_link, 'equipment not match',
                 );
                 assert(sub_equipment.rarity == main_equipment.rarity, 'equipment rarity not match');
                 world.erase_model(@sub_equipment);
             };
+
+            let gem_dispatcher = GemABIDispatcher {
+                contract_address: contract_address_const::<GEM_ADDRESS_FELT>(),
+            };
+            let mut gem_cost: u256 = 0;
+            match main_equipment.rarity {
+                0 => { gem_cost = 300; },
+                1 => { gem_cost = 400; },
+                2 => { gem_cost = 500; },
+                3 => { gem_cost = 690; },
+                4 => { gem_cost = 900; },
+                5 => panic_with_felt252('max rarity reached'),
+                _ => panic_with_felt252('invalid rarity'),
+            }
+            gem_dispatcher.burn(caller, gem_cost);
 
             let mut new_sub_attributes = ArrayTrait::<ByteArray>::new();
             new_sub_attributes.append_span(main_equipment.sub_attributes);

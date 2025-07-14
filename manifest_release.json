@@ -1,8 +1,8 @@
 {
   "world": {
-    "class_hash": "0x45575a88cc5cef1e444c77ce60b7b4c9e73a01cbbe20926d5a4c72a94011410",
-    "address": "0x2fc68368bfaba61c0097121a4ce923b6182df0d72450a1f883b955eba1ef462",
-    "seed": "cf_10",
+    "class_hash": "0x685ed02eefa98fe7e208aa295042e9bbad8029b0d3d6f0ba2b32546efe0a1f9",
+    "address": "0x7d03cc746ee0c810effe26193d324ed88ff379a39bf3a357acccc631bb21ae3",
+    "seed": "cf_11",
     "name": "Crimson Fate",
     "entrypoints": [
       "uuid",
@@ -11,6 +11,7 @@
       "register_event",
       "register_model",
       "register_contract",
+      "register_library",
       "init_contract",
       "upgrade_event",
       "upgrade_model",
@@ -78,6 +79,10 @@
           {
             "name": "Unregistered",
             "type": "()"
+          },
+          {
+            "name": "Library",
+            "type": "(core::starknet::class_hash::ClassHash, core::felt252)"
           }
         ]
       },
@@ -358,6 +363,34 @@
             "outputs": [
               {
                 "type": "core::starknet::contract_address::ContractAddress"
+              }
+            ],
+            "state_mutability": "external"
+          },
+          {
+            "type": "function",
+            "name": "register_library",
+            "inputs": [
+              {
+                "name": "namespace",
+                "type": "core::byte_array::ByteArray"
+              },
+              {
+                "name": "class_hash",
+                "type": "core::starknet::class_hash::ClassHash"
+              },
+              {
+                "name": "name",
+                "type": "core::byte_array::ByteArray"
+              },
+              {
+                "name": "version",
+                "type": "core::byte_array::ByteArray"
+              }
+            ],
+            "outputs": [
+              {
+                "type": "core::starknet::class_hash::ClassHash"
               }
             ],
             "state_mutability": "external"
@@ -657,6 +690,22 @@
             ],
             "outputs": [],
             "state_mutability": "external"
+          },
+          {
+            "type": "function",
+            "name": "owners_count",
+            "inputs": [
+              {
+                "name": "resource",
+                "type": "core::felt252"
+              }
+            ],
+            "outputs": [
+              {
+                "type": "core::integer::u64"
+              }
+            ],
+            "state_mutability": "view"
           },
           {
             "type": "function",
@@ -967,6 +1016,28 @@
       },
       {
         "type": "event",
+        "name": "dojo::world::world_contract::world::LibraryRegistered",
+        "kind": "struct",
+        "members": [
+          {
+            "name": "name",
+            "type": "core::byte_array::ByteArray",
+            "kind": "key"
+          },
+          {
+            "name": "namespace",
+            "type": "core::byte_array::ByteArray",
+            "kind": "key"
+          },
+          {
+            "name": "class_hash",
+            "type": "core::starknet::class_hash::ClassHash",
+            "kind": "data"
+          }
+        ]
+      },
+      {
+        "type": "event",
         "name": "dojo::world::world_contract::world::EventEmitted",
         "kind": "struct",
         "members": [
@@ -1207,6 +1278,11 @@
             "kind": "nested"
           },
           {
+            "name": "LibraryRegistered",
+            "type": "dojo::world::world_contract::world::LibraryRegistered",
+            "kind": "nested"
+          },
+          {
             "name": "EventEmitted",
             "type": "dojo::world::world_contract::world::EventEmitted",
             "kind": "nested"
@@ -1252,8 +1328,8 @@
   },
   "contracts": [
     {
-      "address": "0x52e99d9378cfeb790337fefa6b12117978d1feb6c870709c8019fca6637807e",
-      "class_hash": "0x5ec2ae51a42fedee9ff261847a46339d1e23ba941ff6725f2aadf04d808238f",
+      "address": "0x5ef1617af662856daa301a4e86322e799da3ee63e27ef11c3bccd98a56ac47f",
+      "class_hash": "0x6b7c737e6597839da7a758b2d6022bc296763321366344b4f5753779690ec21",
       "abi": [
         {
           "type": "impl",
@@ -1638,8 +1714,8 @@
       ]
     },
     {
-      "address": "0x338aa8bd6b5bf02af7d2619c1f0fc45bda8d61708817cb6ec257f0857885fc7",
-      "class_hash": "0x127d57c859e6fccb6d08b7f397dbcbdf2cc599cdfabfd872fc567b7a725626d",
+      "address": "0x353fd44655e4787a4b8dcffb677e94e5bb32a091b18afc87c79a02cc4edae5a",
+      "class_hash": "0x22cca641ff77441218f219a0f831fd96ad57409588ba06f575cf4749082e2b2",
       "abi": [
         {
           "type": "impl",
@@ -1858,48 +1934,420 @@
         "claim_gem",
         "upgrade"
       ]
+    },
+    {
+      "address": "0x244fbcd49cfab312b7952a34b45247b00034eb32fed9e7b0f9e8de5b3f64541",
+      "class_hash": "0x6d06346253afc8e9b5aec4e1b54367318c323f012bb33c65620008169e1aff2",
+      "abi": [
+        {
+          "type": "impl",
+          "name": "ItemSystem__ContractImpl",
+          "interface_name": "dojo::contract::interface::IContract"
+        },
+        {
+          "type": "interface",
+          "name": "dojo::contract::interface::IContract",
+          "items": []
+        },
+        {
+          "type": "impl",
+          "name": "ItemSystem__DeployedContractImpl",
+          "interface_name": "dojo::meta::interface::IDeployedResource"
+        },
+        {
+          "type": "struct",
+          "name": "core::byte_array::ByteArray",
+          "members": [
+            {
+              "name": "data",
+              "type": "core::array::Array::<core::bytes_31::bytes31>"
+            },
+            {
+              "name": "pending_word",
+              "type": "core::felt252"
+            },
+            {
+              "name": "pending_word_len",
+              "type": "core::integer::u32"
+            }
+          ]
+        },
+        {
+          "type": "interface",
+          "name": "dojo::meta::interface::IDeployedResource",
+          "items": [
+            {
+              "type": "function",
+              "name": "dojo_name",
+              "inputs": [],
+              "outputs": [
+                {
+                  "type": "core::byte_array::ByteArray"
+                }
+              ],
+              "state_mutability": "view"
+            }
+          ]
+        },
+        {
+          "type": "impl",
+          "name": "ItemSystemImpl",
+          "interface_name": "crimson_fate::systems::item::IItemSystem"
+        },
+        {
+          "type": "struct",
+          "name": "core::array::Span::<core::byte_array::ByteArray>",
+          "members": [
+            {
+              "name": "snapshot",
+              "type": "@core::array::Array::<core::byte_array::ByteArray>"
+            }
+          ]
+        },
+        {
+          "type": "struct",
+          "name": "crimson_fate::constants::ReceiveEquipment",
+          "members": [
+            {
+              "name": "id",
+              "type": "core::felt252"
+            },
+            {
+              "name": "skill_link",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "rarity",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "base_attribute",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "sub_attributes",
+              "type": "core::array::Span::<core::byte_array::ByteArray>"
+            }
+          ]
+        },
+        {
+          "type": "struct",
+          "name": "crimson_fate::constants::ReceiveSoulPieceResource",
+          "members": [
+            {
+              "name": "resource_type",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "amount",
+              "type": "core::integer::u128"
+            }
+          ]
+        },
+        {
+          "type": "struct",
+          "name": "core::array::Span::<core::felt252>",
+          "members": [
+            {
+              "name": "snapshot",
+              "type": "@core::array::Array::<core::felt252>"
+            }
+          ]
+        },
+        {
+          "type": "interface",
+          "name": "crimson_fate::systems::item::IItemSystem",
+          "items": [
+            {
+              "type": "function",
+              "name": "set_max_equipment_level",
+              "inputs": [
+                {
+                  "name": "rarity",
+                  "type": "core::integer::u8"
+                },
+                {
+                  "name": "level",
+                  "type": "core::integer::u8"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "claim_new_equipments",
+              "inputs": [
+                {
+                  "name": "items",
+                  "type": "core::array::Array::<crimson_fate::constants::ReceiveEquipment>"
+                },
+                {
+                  "name": "key",
+                  "type": "core::array::Array::<core::felt252>"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "claim_soul_piece_resources",
+              "inputs": [
+                {
+                  "name": "resources",
+                  "type": "core::array::Array::<crimson_fate::constants::ReceiveSoulPieceResource>"
+                },
+                {
+                  "name": "key",
+                  "type": "core::array::Array::<core::felt252>"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "upgrade_equipment",
+              "inputs": [
+                {
+                  "name": "item_id",
+                  "type": "core::felt252"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "reforge_equipment",
+              "inputs": [
+                {
+                  "name": "item_id",
+                  "type": "core::felt252"
+                },
+                {
+                  "name": "sub_attributes",
+                  "type": "core::array::Span::<core::byte_array::ByteArray>"
+                },
+                {
+                  "name": "key",
+                  "type": "core::array::Array::<core::felt252>"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "merge_equipment",
+              "inputs": [
+                {
+                  "name": "main_item_id",
+                  "type": "core::felt252"
+                },
+                {
+                  "name": "sub_item_ids",
+                  "type": "core::array::Span::<core::felt252>"
+                },
+                {
+                  "name": "new_sub_attribute",
+                  "type": "core::byte_array::ByteArray"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            }
+          ]
+        },
+        {
+          "type": "function",
+          "name": "dojo_init",
+          "inputs": [],
+          "outputs": [],
+          "state_mutability": "view"
+        },
+        {
+          "type": "impl",
+          "name": "WorldProviderImpl",
+          "interface_name": "dojo::contract::components::world_provider::IWorldProvider"
+        },
+        {
+          "type": "struct",
+          "name": "dojo::world::iworld::IWorldDispatcher",
+          "members": [
+            {
+              "name": "contract_address",
+              "type": "core::starknet::contract_address::ContractAddress"
+            }
+          ]
+        },
+        {
+          "type": "interface",
+          "name": "dojo::contract::components::world_provider::IWorldProvider",
+          "items": [
+            {
+              "type": "function",
+              "name": "world_dispatcher",
+              "inputs": [],
+              "outputs": [
+                {
+                  "type": "dojo::world::iworld::IWorldDispatcher"
+                }
+              ],
+              "state_mutability": "view"
+            }
+          ]
+        },
+        {
+          "type": "impl",
+          "name": "UpgradeableImpl",
+          "interface_name": "dojo::contract::components::upgradeable::IUpgradeable"
+        },
+        {
+          "type": "interface",
+          "name": "dojo::contract::components::upgradeable::IUpgradeable",
+          "items": [
+            {
+              "type": "function",
+              "name": "upgrade",
+              "inputs": [
+                {
+                  "name": "new_class_hash",
+                  "type": "core::starknet::class_hash::ClassHash"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            }
+          ]
+        },
+        {
+          "type": "constructor",
+          "name": "constructor",
+          "inputs": []
+        },
+        {
+          "type": "event",
+          "name": "dojo::contract::components::upgradeable::upgradeable_cpt::Upgraded",
+          "kind": "struct",
+          "members": [
+            {
+              "name": "class_hash",
+              "type": "core::starknet::class_hash::ClassHash",
+              "kind": "data"
+            }
+          ]
+        },
+        {
+          "type": "event",
+          "name": "dojo::contract::components::upgradeable::upgradeable_cpt::Event",
+          "kind": "enum",
+          "variants": [
+            {
+              "name": "Upgraded",
+              "type": "dojo::contract::components::upgradeable::upgradeable_cpt::Upgraded",
+              "kind": "nested"
+            }
+          ]
+        },
+        {
+          "type": "event",
+          "name": "dojo::contract::components::world_provider::world_provider_cpt::Event",
+          "kind": "enum",
+          "variants": []
+        },
+        {
+          "type": "event",
+          "name": "crimson_fate::systems::item::ItemSystem::Event",
+          "kind": "enum",
+          "variants": [
+            {
+              "name": "UpgradeableEvent",
+              "type": "dojo::contract::components::upgradeable::upgradeable_cpt::Event",
+              "kind": "nested"
+            },
+            {
+              "name": "WorldProviderEvent",
+              "type": "dojo::contract::components::world_provider::world_provider_cpt::Event",
+              "kind": "nested"
+            }
+          ]
+        }
+      ],
+      "init_calldata": [],
+      "tag": "cf-ItemSystem",
+      "selector": "0x4d855743ab453337a7ae5de9863e4e0393cc7e0c2bb24eb5f27e83f5cae821d",
+      "systems": [
+        "set_max_equipment_level",
+        "claim_new_equipments",
+        "claim_soul_piece_resources",
+        "upgrade_equipment",
+        "reforge_equipment",
+        "merge_equipment",
+        "upgrade"
+      ]
     }
   ],
+  "libraries": [],
   "models": [
     {
       "members": [],
-      "class_hash": "0x7134b6db5e7fad2ee2cefa6db64c2629c3f6c402c756780cac0a1b30ccbff7f",
+      "class_hash": "0x71de6710041ab8c4d0f13452f2b4c455b0fb6be7e10779f71e0fa0272805817",
       "tag": "cf-CurrentAngelOrEvil",
       "selector": "0x5048a329b3ff1c019091755fc901b023827ab787c3b8396ca909dda6b01d786"
     },
     {
       "members": [],
-      "class_hash": "0x653fef6ac9e9ab66f8eff090177a85dd5389314425cdce95468bb06703bff02",
+      "class_hash": "0x12f0031e8707a6d2f876d39c241860698061849da4dc90dd90f273370b50161",
       "tag": "cf-CurrentReceiveSkill",
       "selector": "0x3a1be16e4e5b535a8f4fbbc5a6f7b74819212b498ef5359c137a407329bf5bd"
     },
     {
       "members": [],
-      "class_hash": "0x4036a6fa3ad38d68b8e3eaa41a1ec3026991eeb34c7c424bb15571d8ee9bc76",
+      "class_hash": "0xd54762afc0e9684c9afa6cbbf03e5768978e45c0bccf4c331d9a619e400dd6",
+      "tag": "cf-Equipment",
+      "selector": "0x67a2b4cb6bbcbfb0b161c40e09c83853364c61a4e520c8dc64f7e392f7de0ed"
+    },
+    {
+      "members": [],
+      "class_hash": "0x3dbf379c9458bb0876392ac37e8efe535e3cc8337640297dfd4424c2b855c1f",
+      "tag": "cf-MaxEquipmentLevel",
+      "selector": "0x4e30a0e4330ed2c51fd7325b8f0a3548c928590f81faa12109bf21ff89f3a91"
+    },
+    {
+      "members": [],
+      "class_hash": "0x26e9d4023194c333a94a81a9af0132c67b00dbd8066f43f0ea753d4b8603030",
       "tag": "cf-PlayerProgress",
       "selector": "0x650933ae9d4dbe98699da6f90e918966a130552471181b8d20b5bb4b88abe95"
     },
     {
       "members": [],
-      "class_hash": "0x5d9d2510e1b60c31e0df157a9b4f8f5b1403110a1af2c2b4e663941d3a772ea",
+      "class_hash": "0x1b899c76a25501ec0448a855eae527041457a171974de53c0dfe7d39e25f34b",
+      "tag": "cf-PlayerSoulPieceResource",
+      "selector": "0x5aa36bfa795ca4cb7b9bea4531b396a92b2c82c5a984d383f0fce47d122134e"
+    },
+    {
+      "members": [],
+      "class_hash": "0x1fbce8144b01dbf8808dec8b3814f7df7682ac646e6224562b0eed6e7708cdb",
       "tag": "cf-Prover",
       "selector": "0x507230c43b9622ae3ced2fe29d4987cf1446231f11815932e4e370c1b5c01d5"
     },
     {
       "members": [],
-      "class_hash": "0x5aabd15566efb27e1a3a53edaab2997f4bcad27ce2ab549c4e19373c5bf6bcc",
+      "class_hash": "0x6e448b91ba9293efe584ef6bed6792e9255d5e5b3a70402ab335bd9cfd5ae00",
       "tag": "cf-UsedSignature",
       "selector": "0xfb0e6ead1ddb44ad6f1a226312b27ecb46e55faff635fd5513be6acce9b57b"
     },
     {
       "members": [],
-      "class_hash": "0x61fa245fb2db5887d9fe4509bca170e5b9538b9845f06225acb5b013695c44f",
+      "class_hash": "0x6c35300abc08b0982d7b31cbdf2f57bb1db44ad6d8542ead2ced238d492ac57",
       "tag": "cf-ValorProgress",
       "selector": "0x1c3b3b22e4b0c785bd8a7644afe05c6e75256d21c98fdaeb3aab77437f9b730"
     },
     {
       "members": [],
-      "class_hash": "0x288d95b4a26f818f6f1217320e923cd1d5f2c260468ea64e44de448f708da94",
+      "class_hash": "0x6c8754d3d4950dcc22e3e4b8790a737c73056b7ac234819b0a6857a2f4f2c2e",
       "tag": "cf-ValorProgressCounter",
       "selector": "0x533d679ecef1d51942f5206124a117b4b92c3f2bfac9852ad3188a88c8b894a"
     }
@@ -1907,39 +2355,40 @@
   "events": [
     {
       "members": [],
-      "class_hash": "0x2451162929ad064f07250b9909eb2a3b18f2d88f577c6b44e5da4b3d502571b",
+      "class_hash": "0x36d71b3c8ecf4d158941413f2a64df942ae7bdf37fc259bc072a506f4a0d6a3",
       "tag": "cf-BribeValor",
       "selector": "0x4c61bbd7756b7138d108af827cf86a438659e17a473b618a5591c02537f7733"
     },
     {
       "members": [],
-      "class_hash": "0x69893134b2b7bd47bb7312f76baa9a7dfeeb762ac2d92ca26758273d8ff7be5",
+      "class_hash": "0x2e0b92e45c882188b631fda40a37272ede2bf11e3bc7fb533b0ed49141e057c",
       "tag": "cf-ChooseSkill",
       "selector": "0x4a4bd3fa5a32920a1006fc591ca1bf441af91af36fea0f597fbf7a3ee0d52e9"
     },
     {
       "members": [],
-      "class_hash": "0x100d22486aaeadeb82b0f3d9bf4e0a95105b585efc51863b8d4fd5df71ae8ed",
+      "class_hash": "0x4afa5212b088f155dbe16c30cc2569b14fdf1a0769ee9eeb08a66d210ff5402",
       "tag": "cf-CreateNewGame",
       "selector": "0x439108a1c650e5a8ed130119b0efd8c0400257c5c8ec22e1c3f26ab4fd13063"
     },
     {
       "members": [],
-      "class_hash": "0x6fbc8189875795ea50a170e829d21bd0af447a69bec218bdc07288d1e88e09b",
+      "class_hash": "0x2275182bfc9c22b4f9cef1d2b7ad0bcbf6475efdedf1a2df41250e906049bc7",
       "tag": "cf-OpenChest",
       "selector": "0x647b687a5c686d051c192c8257aadbe430f497cd092a061dd2c7f15815e7e1b"
     },
     {
       "members": [],
-      "class_hash": "0x4f07c5314968a9d3f474ec3cea1d6839734b30439bf9bfd5e960a064bc6ed8",
+      "class_hash": "0x7cbeb2ed1894f936309d5f740bd1bbc5df7837ae77f97fbb08a9d88b1d231c1",
       "tag": "cf-ReceiveAngelOrEvil",
       "selector": "0x49d9a16905f80a2a07a17677e6b79d3570348af91a47e7f859fe4936307612c"
     },
     {
       "members": [],
-      "class_hash": "0x702ebf818f9aeedd2a520d15b485355aa93c34731bced2302badd23ef383edd",
+      "class_hash": "0x72424d8c35962f58413565a666bf329090a482c7d3099dbfca351ec3ac1e8a4",
       "tag": "cf-ReceiveSkill",
       "selector": "0x563b873af71c5c6f7df7cc476f31bfa45fdc089b9a54c8cfcdcd9fb62b294"
     }
-  ]
+  ],
+  "external_contracts": []
 }

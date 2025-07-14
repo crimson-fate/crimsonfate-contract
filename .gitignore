@@ -2,3 +2,5 @@ target
 dojo_mainnet.toml
 dojo_release.toml
 deployment
+bindings
+.DS_Store

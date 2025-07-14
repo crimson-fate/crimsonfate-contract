@@ -10,7 +10,6 @@ pub struct PlayerSoulPieceResource {
     pub lightning_soul: u128,
     pub mythic_soul: u128,
     pub pollute_soul: u128,
-    pub five_element_soul: u128,
 }
 
 #[derive(Drop, Serde, Copy)]
@@ -20,7 +19,7 @@ pub enum ResourceType {
     Lightning,
     Mythic,
     Pollute,
-    Five_Element
+    Five_Element,
 }
 
 impl IntoResourceType of Into<ResourceType, felt252> {

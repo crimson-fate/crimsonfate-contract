@@ -1,38 +1,42 @@
 [
     {
-        "contractAddress": "0x3e5cbe6b732db0fd8bb397f5653e2fa08db6027b487ed63329a06b783d0d766",
+        "contractAddress": "0x5ef1617af662856daa301a4e86322e799da3ee63e27ef11c3bccd98a56ac47f",
         "entryPoint": "start_new_game"
     },
     {
-        "contractAddress": "0x3e5cbe6b732db0fd8bb397f5653e2fa08db6027b487ed63329a06b783d0d766",
+        "contractAddress": "0x5ef1617af662856daa301a4e86322e799da3ee63e27ef11c3bccd98a56ac47f",
         "entryPoint": "receive_skill"
     },
     {
-        "contractAddress": "0x3e5cbe6b732db0fd8bb397f5653e2fa08db6027b487ed63329a06b783d0d766",
+        "contractAddress": "0x5ef1617af662856daa301a4e86322e799da3ee63e27ef11c3bccd98a56ac47f",
         "entryPoint": "select_skill"
     },
     {
-        "contractAddress": "0x3e5cbe6b732db0fd8bb397f5653e2fa08db6027b487ed63329a06b783d0d766",
+        "contractAddress": "0x5ef1617af662856daa301a4e86322e799da3ee63e27ef11c3bccd98a56ac47f",
         "entryPoint": "receive_angel_or_evil"
     },
     {
-        "contractAddress": "0x3e5cbe6b732db0fd8bb397f5653e2fa08db6027b487ed63329a06b783d0d766",
+        "contractAddress": "0x5ef1617af662856daa301a4e86322e799da3ee63e27ef11c3bccd98a56ac47f",
         "entryPoint": "accept_or_ignore_evil_skill"
     },
     {
-        "contractAddress": "0x3e5cbe6b732db0fd8bb397f5653e2fa08db6027b487ed63329a06b783d0d766",
+        "contractAddress": "0x5ef1617af662856daa301a4e86322e799da3ee63e27ef11c3bccd98a56ac47f",
         "entryPoint": "request_valor"
     },
     {
-        "contractAddress": "0x3e5cbe6b732db0fd8bb397f5653e2fa08db6027b487ed63329a06b783d0d766",
+        "contractAddress": "0x5ef1617af662856daa301a4e86322e799da3ee63e27ef11c3bccd98a56ac47f",
         "entryPoint": "bribe_valor"
     },
     {
-        "contractAddress": "0x3e5cbe6b732db0fd8bb397f5653e2fa08db6027b487ed63329a06b783d0d766",
+        "contractAddress": "0x5ef1617af662856daa301a4e86322e799da3ee63e27ef11c3bccd98a56ac47f",
         "entryPoint": "claim_chest"
     },
     {
-        "contractAddress": "0x3e5cbe6b732db0fd8bb397f5653e2fa08db6027b487ed63329a06b783d0d766",
+        "contractAddress": "0x5ef1617af662856daa301a4e86322e799da3ee63e27ef11c3bccd98a56ac47f",
         "entryPoint": "open_chest"
+    },
+    {
+        "contractAddress": "0x2fa568ef4900cf32fb41b5caf87beb63e6838ebaafa78cf44eea6bfcbb1bd54",
+        "entryPoint": "claim_gem"
     }
 ]

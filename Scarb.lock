@@ -4,16 +4,17 @@ version = 1
 [[package]]
 name = "cartridge_vrf"
 version = "0.1.0"
-source = "git+https://github.com/loothero/vrf.git#efbc9db32d6357f9df2cad0dceca5cabe04a1bf3"
+source = "git+https://github.com/cartridge-gg/vrf.git#38d71385f939a19829113c122f1ab12dbbe0f877"
 dependencies = [
- "openzeppelin",
+ "openzeppelin_access",
+ "openzeppelin_upgrades",
  "snforge_std",
  "stark_vrf",
 ]
 
 [[package]]
 name = "crimson_fate"
-version = "1.2.2"
+version = "1.5.0"
 dependencies = [
  "cartridge_vrf",
  "dojo",
@@ -22,115 +23,67 @@ dependencies = [
 
 [[package]]
 name = "dojo"
-version = "1.0.9"
-source = "git+https://github.com/dojoengine/dojo?tag=v1.0.9#04b5f025d998eee19cd21d33bd8a992498a73160"
+version = "1.6.0-alpha.0"
+source = "git+https://github.com/dojoengine/dojo?tag=v1.6.0-alpha.2#184a4e8368269815823004d61e71f0699059ad77"
 dependencies = [
  "dojo_plugin",
 ]
 
 [[package]]
 name = "dojo_cairo_test"
-version = "1.0.0-rc.0"
-source = "git+https://github.com/dojoengine/dojo?tag=v1.0.9#04b5f025d998eee19cd21d33bd8a992498a73160"
+version = "1.6.0-alpha.0"
+source = "git+https://github.com/dojoengine/dojo?tag=v1.6.0-alpha.2#184a4e8368269815823004d61e71f0699059ad77"
 dependencies = [
  "dojo",
 ]
 
 [[package]]
 name = "dojo_plugin"
-version = "2.8.4"
-source = "git+https://github.com/dojoengine/dojo?tag=v1.0.9#04b5f025d998eee19cd21d33bd8a992498a73160"
-
-[[package]]
-name = "openzeppelin"
-version = "0.15.0-rc.0"
-source = "git+https://github.com/OpenZeppelin/cairo-contracts.git?rev=a13bae3#a13bae3390a7114a8c14c0352c6898eff5f4f5d7"
-dependencies = [
- "openzeppelin_access",
- "openzeppelin_account",
- "openzeppelin_governance",
- "openzeppelin_introspection",
- "openzeppelin_presets",
- "openzeppelin_security",
- "openzeppelin_token",
- "openzeppelin_upgrades",
- "openzeppelin_utils",
-]
+version = "2.10.1"
+source = "git+https://github.com/dojoengine/dojo?tag=v1.6.0-alpha.2#184a4e8368269815823004d61e71f0699059ad77"
 
 [[package]]
 name = "openzeppelin_access"
-version = "0.15.0-rc.0"
-source = "git+https://github.com/OpenZeppelin/cairo-contracts.git?rev=a13bae3#a13bae3390a7114a8c14c0352c6898eff5f4f5d7"
+version = "0.18.0"
+source = "registry+https://scarbs.xyz/"
+checksum = "sha256:424314072ae27d5b6f4264472a5c403711448ea62763a661b89e6ff5f23297fd"
 dependencies = [
  "openzeppelin_introspection",
  "openzeppelin_utils",
-]
-
-[[package]]
-name = "openzeppelin_account"
-version = "0.15.0-rc.0"
-source = "git+https://github.com/OpenZeppelin/cairo-contracts.git?rev=a13bae3#a13bae3390a7114a8c14c0352c6898eff5f4f5d7"
-dependencies = [
- "openzeppelin_introspection",
- "openzeppelin_token",
- "openzeppelin_utils",
-]
-
-[[package]]
-name = "openzeppelin_governance"
-version = "0.15.0-rc.0"
-source = "git+https://github.com/OpenZeppelin/cairo-contracts.git?rev=a13bae3#a13bae3390a7114a8c14c0352c6898eff5f4f5d7"
-dependencies = [
- "openzeppelin_access",
- "openzeppelin_introspection",
 ]
 
 [[package]]
 name = "openzeppelin_introspection"
-version = "0.15.0-rc.0"
-source = "git+https://github.com/OpenZeppelin/cairo-contracts.git?rev=a13bae3#a13bae3390a7114a8c14c0352c6898eff5f4f5d7"
-
-[[package]]
-name = "openzeppelin_presets"
-version = "0.15.0-rc.0"
-source = "git+https://github.com/OpenZeppelin/cairo-contracts.git?rev=a13bae3#a13bae3390a7114a8c14c0352c6898eff5f4f5d7"
-dependencies = [
- "openzeppelin_access",
- "openzeppelin_account",
- "openzeppelin_introspection",
- "openzeppelin_token",
- "openzeppelin_upgrades",
-]
-
-[[package]]
-name = "openzeppelin_security"
-version = "0.15.0-rc.0"
-source = "git+https://github.com/OpenZeppelin/cairo-contracts.git?rev=a13bae3#a13bae3390a7114a8c14c0352c6898eff5f4f5d7"
-
-[[package]]
-name = "openzeppelin_token"
-version = "0.15.0-rc.0"
-source = "git+https://github.com/OpenZeppelin/cairo-contracts.git?rev=a13bae3#a13bae3390a7114a8c14c0352c6898eff5f4f5d7"
-dependencies = [
- "openzeppelin_account",
- "openzeppelin_governance",
- "openzeppelin_introspection",
-]
+version = "0.18.0"
+source = "registry+https://scarbs.xyz/"
+checksum = "sha256:46c4cc6c95c9baa4c7d5cc0ed2bdaf334f46c25a8c92b3012829fff936e3042b"
 
 [[package]]
 name = "openzeppelin_upgrades"
-version = "0.15.0-rc.0"
-source = "git+https://github.com/OpenZeppelin/cairo-contracts.git?rev=a13bae3#a13bae3390a7114a8c14c0352c6898eff5f4f5d7"
+version = "0.18.0"
+source = "registry+https://scarbs.xyz/"
+checksum = "sha256:33c9d0865364fc18a5e7b471fe53c3b0f3e0aec56a94f435089638fad2a4a35b"
 
 [[package]]
 name = "openzeppelin_utils"
-version = "0.15.0-rc.0"
-source = "git+https://github.com/OpenZeppelin/cairo-contracts.git?rev=a13bae3#a13bae3390a7114a8c14c0352c6898eff5f4f5d7"
+version = "0.18.0"
+source = "registry+https://scarbs.xyz/"
+checksum = "sha256:725b212839f3eddc32791408609099c5e808c167ca0cf331d8c1d778b07a4e21"
+
+[[package]]
+name = "snforge_scarb_plugin"
+version = "0.31.1"
+source = "registry+https://scarbs.xyz/"
+checksum = "sha256:239c8566048808c7f15733f27f604623ed7ceb16324bacafed70291f2c4fe57e"
 
 [[package]]
 name = "snforge_std"
-version = "0.26.0"
-source = "git+https://github.com/foundry-rs/starknet-foundry.git?tag=v0.26.0#50eb589db65e113efe4f09241feb59b574228c7e"
+version = "0.31.1"
+source = "registry+https://scarbs.xyz/"
+checksum = "sha256:1148da046c253f4e11e3d34cb9b99c9a45233381f48158a101a780746dc04a9d"
+dependencies = [
+ "snforge_scarb_plugin",
+]
 
 [[package]]
 name = "stark_vrf"
