@@ -12,7 +12,7 @@ pub mod Gem {
     use crimson_fate::models::signature::{Prover, UsedSignature};
     use crimson_fate::utils::signature::v0::compute_message_claim_gem_hash;
     use dojo::model::{ModelStorage, ModelValueStorage};
-    use starknet::{ContractAddress, contract_address_const, get_caller_address};
+    use starknet::{ contract_address_const, get_caller_address};
 
     #[abi(embed_v0)]
     impl GemImpl of super::IGem<ContractState> {

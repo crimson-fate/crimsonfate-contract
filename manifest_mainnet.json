@@ -1329,7 +1329,7 @@
   "contracts": [
     {
       "address": "0x5ef1617af662856daa301a4e86322e799da3ee63e27ef11c3bccd98a56ac47f",
-      "class_hash": "0x6b7c737e6597839da7a758b2d6022bc296763321366344b4f5753779690ec21",
+      "class_hash": "0x60a5666cb398402463e2e7bf2ba74cec0de170043e6c8f30f3b0615d2df8276",
       "abi": [
         {
           "type": "impl",
@@ -1577,6 +1577,30 @@
               ],
               "outputs": [],
               "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "claim_gem_from_valor",
+              "inputs": [
+                {
+                  "name": "multiplier",
+                  "type": "core::integer::u32"
+                },
+                {
+                  "name": "progress_id",
+                  "type": "core::integer::u128"
+                },
+                {
+                  "name": "salt_nonce",
+                  "type": "core::integer::u64"
+                },
+                {
+                  "name": "key",
+                  "type": "core::array::Array::<core::felt252>"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
             }
           ]
         },
@@ -1710,6 +1734,7 @@
         "bribe_valor",
         "claim_chest",
         "open_chest",
+        "claim_gem_from_valor",
         "upgrade"
       ]
     },
@@ -1937,7 +1962,7 @@
     },
     {
       "address": "0x667e188941a8b457d9e768a95637477dcf16211cefbc411c3c4c799efc3a419",
-      "class_hash": "0x629771ef3a66031de48f3ff7e2c82769ebf99c6ba186704749970c8cbb370d2",
+      "class_hash": "0x6ba3ee7fd7566aec052d29a99641ace721c8ecc76a85bc039f214f6c0576ef3",
       "abi": [
         {
           "type": "impl",

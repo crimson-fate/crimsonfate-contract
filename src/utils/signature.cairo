@@ -12,24 +12,31 @@ pub mod v0 {
     use starknet::{get_tx_info, ContractAddress};
 
     use crimson_fate::constants::{
-        StarknetDomain, ReceiveSkillParams, ReceiveAngelOrEvilParams, ClaimGemParams
+        StarknetDomain, ReceiveSkillParams, ReceiveAngelOrEvilParams, ClaimGemParams,
+        ClaimValorGemParams,
     };
 
-    pub const STARKNET_DOMAIN_TYPE_HASH: felt252 =
-        selector!("StarkNetDomain(name:felt,version:felt,chainId:felt)",);
+    pub const STARKNET_DOMAIN_TYPE_HASH: felt252 = selector!(
+        "StarkNetDomain(name:felt,version:felt,chainId:felt)",
+    );
 
-    pub const RECEIVE_SKILL_TYPE_HASH: felt252 =
-        selector!("ReceiveSkillParams(player:felt,salt_nonce:felt,is_new_game:bool,is_evil:bool)",);
+    pub const RECEIVE_SKILL_TYPE_HASH: felt252 = selector!(
+        "ReceiveSkillParams(player:felt,salt_nonce:felt,is_new_game:bool,is_evil:bool)",
+    );
 
-    pub const RECEIVE_ANGEL_OR_EVIL_TYPE_HASH: felt252 =
-        selector!("ReceiveAngelOrEvilParams(player:felt,salt_nonce:felt)",);
+    pub const RECEIVE_ANGEL_OR_EVIL_TYPE_HASH: felt252 = selector!(
+        "ReceiveAngelOrEvilParams(player:felt,salt_nonce:felt)",
+    );
 
-    pub const CLAIM_GEM_TYPE_HASH: felt252 =
-        selector!(
-            "ClaimGemParams(player:felt,amount:u256,salt_nonce:felt)u256(low:felt,high:felt)",
-        );
+    pub const CLAIM_GEM_TYPE_HASH: felt252 = selector!(
+        "ClaimGemParams(player:felt,amount:u256,salt_nonce:felt)u256(low:felt,high:felt)",
+    );
 
     pub const U256_TYPE_HASH: felt252 = selector!("u256(low:felt,high:felt)");
+
+    pub const CLAIM_VALOR_GEM_TYPE_HASH: felt252 = selector!(
+        "ClaimValorGemParams(player:felt,multiplier:u32,progress_id:u128,salt_nonce:felt)",
+    );
 
     pub const STARKNET_DOMAIN_VERSION: felt252 = 1;
 
@@ -75,8 +82,19 @@ pub mod v0 {
         state.finalize()
     }
 
+    pub fn hash_claim_valor_gem(claim_valor_gem: @ClaimValorGemParams) -> felt252 {
+        let mut state = PedersenTrait::new(0);
+        state = state.update_with(CLAIM_VALOR_GEM_TYPE_HASH);
+        state = state.update_with(*claim_valor_gem.player);
+        state = state.update_with(*claim_valor_gem.multiplier);
+        state = state.update_with(*claim_valor_gem.progress_id);
+        state = state.update_with(*claim_valor_gem.salt_nonce);
+        state = state.update_with(5);
+        state.finalize()
+    }
+
     pub fn compute_message_receive_skill_hash(
-        data: @ReceiveSkillParams, prover: ContractAddress
+        data: @ReceiveSkillParams, prover: ContractAddress,
     ) -> felt252 {
         let domain = DEFAULT_DOMAIN();
         let mut state = PedersenTrait::new(0);
@@ -97,7 +115,7 @@ pub mod v0 {
     }
 
     pub fn compute_message_receive_angel_or_evil_hash(
-        data: @ReceiveAngelOrEvilParams, prover: ContractAddress
+        data: @ReceiveAngelOrEvilParams, prover: ContractAddress,
     ) -> felt252 {
         let domain = DEFAULT_DOMAIN();
         let mut state = PedersenTrait::new(0);
@@ -110,7 +128,7 @@ pub mod v0 {
     }
 
     pub fn compute_message_claim_gem_hash(
-        data: @ClaimGemParams, prover: ContractAddress
+        data: @ClaimGemParams, prover: ContractAddress,
     ) -> felt252 {
         let domain = DEFAULT_DOMAIN();
         let mut state = PedersenTrait::new(0);
@@ -118,6 +136,19 @@ pub mod v0 {
         state = state.update_with(hash_domain(@domain));
         state = state.update_with(prover);
         state = state.update_with(hash_claim_gem(data));
+        state = state.update_with(4);
+        state.finalize()
+    }
+
+    pub fn compute_message_claim_valor_gem_hash(
+        data: @ClaimValorGemParams, prover: ContractAddress,
+    ) -> felt252 {
+        let domain = DEFAULT_DOMAIN();
+        let mut state = PedersenTrait::new(0);
+        state = state.update_with('StarkNet Message');
+        state = state.update_with(hash_domain(@domain));
+        state = state.update_with(prover);
+        state = state.update_with(hash_claim_valor_gem(data));
         state = state.update_with(4);
         state.finalize()
     }
@@ -137,25 +168,23 @@ pub mod v1 {
         revision: felt252,
     }
 
-    const STARKNET_DOMAIN_TYPE_HASH: felt252 =
-        selector!(
-            "\"StarknetDomain\"(\"name\":\"shortstring\",\"version\":\"shortstring\",\"chainId\":\"shortstring\",\"revision\":\"shortstring\")"
-        );
+    const STARKNET_DOMAIN_TYPE_HASH: felt252 = selector!(
+        "\"StarknetDomain\"(\"name\":\"shortstring\",\"version\":\"shortstring\",\"chainId\":\"shortstring\",\"revision\":\"shortstring\")",
+    );
 
-    pub const RECEIVE_EQUIPMENT_STRUCT_TYPE_HASH: felt252 =
-        selector!(
-            "\"ReceiveEquipmentStruct\"(\"Id\":\"felt\",\"Skill Link\":\"felt\",\"Rarity\":\"felt\",\"Base Attribute\":\"felt\",\"Sub Attribute\":\"string\")"
-        );
+    pub const RECEIVE_EQUIPMENT_STRUCT_TYPE_HASH: felt252 = selector!(
+        "\"ReceiveEquipmentStruct\"(\"Id\":\"felt\",\"Skill Link\":\"felt\",\"Rarity\":\"felt\",\"Base Attribute\":\"felt\",\"Sub Attribute\":\"string\")",
+    );
 
     pub impl OffChainMessageHashStruct<
-        T, impl TStrucHash: super::IStructHash<T>, impl TDrop: Drop<T>
+        T, impl TStrucHash: super::IStructHash<T>, impl TDrop: Drop<T>,
     > of super::IOffChainMessageHash<T> {
         fn get_message_hash(data: T, signer: ContractAddress) -> felt252 {
             let domain = StarknetDomain {
                 name: 'crimson-fate',
                 version: '1',
                 chain_id: get_tx_info().unbox().chain_id,
-                revision: 1
+                revision: 1,
             };
             let mut state = PoseidonTrait::new();
             state = state.update_with('StarkNet Message');
@@ -176,9 +205,9 @@ pub mod v1 {
                     *self.name,
                     *self.version,
                     *self.chain_id,
-                    *self.revision
+                    *self.revision,
                 ]
-                    .span()
+                    .span(),
             )
         }
     }

@@ -1,7 +1,8 @@
-use starknet::ContractAddress;
-use crimson_fate::utils::signature::{IStructHash, v1::RECEIVE_EQUIPMENT_STRUCT_TYPE_HASH};
+use core::hash::{HashStateExTrait, HashStateTrait};
 use core::poseidon::PoseidonTrait;
-use core::hash::{HashStateTrait, HashStateExTrait};
+use crimson_fate::utils::signature::IStructHash;
+use crimson_fate::utils::signature::v1::RECEIVE_EQUIPMENT_STRUCT_TYPE_HASH;
+use starknet::ContractAddress;
 
 #[derive(Drop, Copy, Hash)]
 pub struct StarknetDomain {
@@ -28,6 +29,14 @@ pub struct ReceiveAngelOrEvilParams {
 pub struct ClaimGemParams {
     pub player: ContractAddress,
     pub amount: u256,
+    pub salt_nonce: u64,
+}
+
+#[derive(Drop, Copy, Hash)]
+pub struct ClaimValorGemParams {
+    pub player: ContractAddress,
+    pub multiplier: u32,
+    pub progress_id: u128,
     pub salt_nonce: u64,
 }
 
@@ -79,8 +88,13 @@ pub const MAX_RECEIVE_SKILL: u16 = 3;
 
 pub const SYSTEM_VERSION: felt252 = '0.0.1';
 
+pub const WEI_UNIT: u256 = 1000000000000000000;
+
 pub const GEM_ADDRESS_FELT: felt252 =
-    0x5e011552406c5c8e402e478cbf26a17a9dbda8941390741ac61c2b623a5457b;
+    0x006f237ac6c6d144181b077ca8d69430ae44b29e06f9acf0300e8b0593d83a69;
+
+pub const VALOR_VAULT_ADDRESS_FELT: felt252 =
+    0x07b123e848c57f3200032d6bd992cecb9f33d62a906cb5b65c5dd8220bd6b27c;
 
 pub fn DEFAULT_NS() -> ByteArray {
     "cf"
@@ -98,4 +112,10 @@ pub trait AccountABI<TState> {
 pub trait GemABI<TState> {
     fn mint(ref self: TState, to: ContractAddress, amount: u256);
     fn burn(ref self: TState, from: ContractAddress, amount: u256);
+}
+
+#[starknet::interface]
+pub trait ValorVaultABI<TState> {
+    fn stake(ref self: TState, player: ContractAddress, amount: u256);
+    fn claim(ref self: TState, player: ContractAddress, multiplier: u32);
 }

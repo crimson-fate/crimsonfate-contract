@@ -1,5 +1,5 @@
 # The World address to index.
-world_address = "0x685ed02eefa98fe7e208aa295042e9bbad8029b0d3d6f0ba2b32546efe0a1f9"
+world_address = "0x7d03cc746ee0c810effe26193d324ed88ff379a39bf3a357acccc631bb21ae3"
  
 # Default RPC URL configuration
 rpc = "https://api.cartridge.gg/x/starknet/mainnet"

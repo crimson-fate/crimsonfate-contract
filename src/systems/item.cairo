@@ -24,7 +24,7 @@ mod ItemSystem {
     use crimson_fate::constants::{
         DEFAULT_NS, SYSTEM_VERSION, AccountABIDispatcher, AccountABIDispatcherTrait,
         ReceiveEquipment, ReceiveSoulPieceResource, GemABIDispatcher, GemABIDispatcherTrait,
-        GEM_ADDRESS_FELT,
+        GEM_ADDRESS_FELT, WEI_UNIT,
     };
     use crimson_fate::utils::signature::{
         IStructHash, v1::OffChainMessageHashStruct, v1::RECEIVE_EQUIPMENT_STRUCT_TYPE_HASH,
@@ -86,7 +86,7 @@ mod ItemSystem {
             ref self: ContractState, items: Array<ReceiveEquipment>, key: Array<felt252>,
         ) {
             let mut world = self.world(@DEFAULT_NS());
-            let prover: Prover = world.read_model(SYSTEM_VERSION);
+            // let prover: Prover = world.read_model(SYSTEM_VERSION);
 
             // let msg_hash = OffChainMessageHashStruct::get_message_hash(
             //     ReceiveEquipment {
@@ -160,7 +160,7 @@ mod ItemSystem {
                 contract_address: contract_address_const::<GEM_ADDRESS_FELT>(),
             };
 
-            // gem_dispatcher.burn(caller, gem_cost.into());
+            gem_dispatcher.burn(caller, (gem_cost.into() * WEI_UNIT));
             let mut playerResource: PlayerSoulPieceResource = world.read_model(caller);
             match equipment.skill_link {
                 EEquipmentSkill::Machine_Gun => {
@@ -229,7 +229,7 @@ mod ItemSystem {
                 5 => { gem_cost = 300_000; },
                 _ => panic_with_felt252('invalid rarity'),
             }
-            gem_dispatcher.burn(caller, gem_cost);
+            gem_dispatcher.burn(caller, (gem_cost * WEI_UNIT));
             // TODO: check signature
             equipment.sub_attributes = sub_attributes;
             world.write_model(@equipment);
@@ -269,7 +269,7 @@ mod ItemSystem {
                 5 => panic_with_felt252('max rarity reached'),
                 _ => panic_with_felt252('invalid rarity'),
             }
-            gem_dispatcher.burn(caller, gem_cost);
+            gem_dispatcher.burn(caller, (gem_cost * WEI_UNIT));
 
             let mut new_sub_attributes = ArrayTrait::<ByteArray>::new();
             new_sub_attributes.append_span(main_equipment.sub_attributes);

@@ -1,8 +1,8 @@
 {
   "world": {
     "class_hash": "0x685ed02eefa98fe7e208aa295042e9bbad8029b0d3d6f0ba2b32546efe0a1f9",
-    "address": "0x7d03cc746ee0c810effe26193d324ed88ff379a39bf3a357acccc631bb21ae3",
-    "seed": "cf_11",
+    "address": "0x79fb005799b35b8a88788e6ed1ff7d1d71b977b27bea74b24c48f96846be4df",
+    "seed": "cf_12",
     "name": "Crimson Fate",
     "entrypoints": [
       "uuid",
@@ -1328,8 +1328,8 @@
   },
   "contracts": [
     {
-      "address": "0x5ef1617af662856daa301a4e86322e799da3ee63e27ef11c3bccd98a56ac47f",
-      "class_hash": "0x6b7c737e6597839da7a758b2d6022bc296763321366344b4f5753779690ec21",
+      "address": "0x755a986845c8652e4a229beba343035a75a319b4d2b799efe3ac4d7a35aebb8",
+      "class_hash": "0x7220dcd483a799773adbc1f139aec50d30f9dd3438ccd932977b293fd43e221",
       "abi": [
         {
           "type": "impl",
@@ -1577,6 +1577,30 @@
               ],
               "outputs": [],
               "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "claim_gem_from_valor",
+              "inputs": [
+                {
+                  "name": "multiplier",
+                  "type": "core::integer::u32"
+                },
+                {
+                  "name": "progress_id",
+                  "type": "core::integer::u128"
+                },
+                {
+                  "name": "salt_nonce",
+                  "type": "core::integer::u64"
+                },
+                {
+                  "name": "key",
+                  "type": "core::array::Array::<core::felt252>"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
             }
           ]
         },
@@ -1710,12 +1734,13 @@
         "bribe_valor",
         "claim_chest",
         "open_chest",
+        "claim_gem_from_valor",
         "upgrade"
       ]
     },
     {
-      "address": "0x353fd44655e4787a4b8dcffb677e94e5bb32a091b18afc87c79a02cc4edae5a",
-      "class_hash": "0x22cca641ff77441218f219a0f831fd96ad57409588ba06f575cf4749082e2b2",
+      "address": "0x4d20f299a19702e5466430072d57e8114ada3fa4bba587f403058ad894fa42a",
+      "class_hash": "0x6519f379764c04c4f1fe1926243f55aa40f0f07842e9b3cf0c03919af1d6e30",
       "abi": [
         {
           "type": "impl",
@@ -1936,8 +1961,8 @@
       ]
     },
     {
-      "address": "0x244fbcd49cfab312b7952a34b45247b00034eb32fed9e7b0f9e8de5b3f64541",
-      "class_hash": "0x6d06346253afc8e9b5aec4e1b54367318c323f012bb33c65620008169e1aff2",
+      "address": "0x32b7c616818191ea82588b9fd83606481cc8b0894c3006b88eaf6a61c9e9df0",
+      "class_hash": "0x7540d7c46e5a3bfcc9792358a5dbb8a6263840091fcb1bb85977e9c1ae0cb9",
       "abi": [
         {
           "type": "impl",
@@ -2323,7 +2348,7 @@
     },
     {
       "members": [],
-      "class_hash": "0x1b899c76a25501ec0448a855eae527041457a171974de53c0dfe7d39e25f34b",
+      "class_hash": "0x5db8e626eeda40b537116869b65c1023deca326fba366b2923c07847359a761",
       "tag": "cf-PlayerSoulPieceResource",
       "selector": "0x5aa36bfa795ca4cb7b9bea4531b396a92b2c82c5a984d383f0fce47d122134e"
     },

@@ -13,14 +13,18 @@ pub trait IGameSystem<TState> {
     fn bribe_valor(ref self: TState, amount: u256, key: Array<felt252>);
     fn claim_chest(ref self: TState, key: Array<felt252>);
     fn open_chest(ref self: TState, key: Array<felt252>);
+    fn claim_gem_from_valor(
+        ref self: TState, multiplier: u32, progress_id: u128, salt_nonce: u64, key: Array<felt252>,
+    );
 }
 
 #[dojo::contract]
 pub mod GameSystem {
     use core::num::traits::Zero;
-    use starknet::{get_caller_address, get_block_timestamp, get_tx_info};
+    use starknet::{get_caller_address, get_block_timestamp, get_tx_info, contract_address_const};
     use crimson_fate::utils::signature::{
         v0::compute_message_receive_skill_hash, v0::compute_message_receive_angel_or_evil_hash,
+        v0::compute_message_claim_valor_gem_hash,
     };
     use crimson_fate::utils::random::{
         get_random_hash, get_random_index_of_skill, get_random_skill_from_selected_skills,
@@ -37,7 +41,9 @@ pub mod GameSystem {
     use crimson_fate::models::valor::{ValorProgressCounter, ValorProgress};
     use crimson_fate::constants::{
         ReceiveSkillParams, DEFAULT_NS, MAX_INDEX_OF_COMMON_SKILL, MAX_INDEX_OF_EVIL_SKILL,
-        ReceiveAngelOrEvilParams, SYSTEM_VERSION, AccountABIDispatcher, AccountABIDispatcherTrait
+        ReceiveAngelOrEvilParams, SYSTEM_VERSION, AccountABIDispatcher, AccountABIDispatcherTrait,
+        VALOR_VAULT_ADDRESS_FELT, ValorVaultABIDispatcher, ValorVaultABIDispatcherTrait,
+        GemABIDispatcher, GemABIDispatcherTrait, GEM_ADDRESS_FELT, ClaimValorGemParams, WEI_UNIT,
     };
     use starknet::storage::{StoragePointerReadAccess, StoragePointerWriteAccess};
     use dojo::model::{ModelStorage, ModelValueStorage};
@@ -246,34 +252,33 @@ pub mod GameSystem {
             assert(!current_receive_skill.is_selected, 'skill already selected');
 
             let mut is_wrong_skill = true;
-            for skill in current_receive_skill
-                .skills {
-                    if *skill.index == skill_index {
-                        is_wrong_skill = false;
-                        current_receive_skill.is_selected = true;
-                        world.write_model(@current_receive_skill);
+            for skill in current_receive_skill.skills {
+                if *skill.index == skill_index {
+                    is_wrong_skill = false;
+                    current_receive_skill.is_selected = true;
+                    world.write_model(@current_receive_skill);
 
-                        let mut player_progress: PlayerProgress = world.read_model(player);
-                        player_progress
-                            .skills
-                            .append(
-                                SelectedSkill {
-                                    skill: *skill.skill, is_evil: current_receive_skill.is_evil,
-                                },
-                            );
-                        world.write_model(@player_progress);
-                        world
-                            .emit_event(
-                                @ChooseSkill {
-                                    player,
-                                    skill: *skill.skill,
-                                    index: skill_index,
-                                    is_evil: current_receive_skill.is_evil,
-                                },
-                            );
-                        break;
-                    }
-                };
+                    let mut player_progress: PlayerProgress = world.read_model(player);
+                    player_progress
+                        .skills
+                        .append(
+                            SelectedSkill {
+                                skill: *skill.skill, is_evil: current_receive_skill.is_evil,
+                            },
+                        );
+                    world.write_model(@player_progress);
+                    world
+                        .emit_event(
+                            @ChooseSkill {
+                                player,
+                                skill: *skill.skill,
+                                index: skill_index,
+                                is_evil: current_receive_skill.is_evil,
+                            },
+                        );
+                    break;
+                }
+            };
 
             assert(!is_wrong_skill, 'select wrong skill');
         }
@@ -450,14 +455,28 @@ pub mod GameSystem {
             let caller = get_caller_address();
 
             let mut valor_progress_counter: ValorProgressCounter = world.read_model(caller);
-            let mut valor_progress: ValorProgress = world
-                .read_model((caller, valor_progress_counter.counter));
+            // let mut valor_progress: ValorProgress = world
+            //     .read_model((caller, valor_progress_counter.counter));
 
             // if valor_progress_counter.counter > 0 {
             //     assert(valor_progress.is_claimed, 'valor have not returned');
             // }
 
             // TODO verify key
+
+            let mut gem_cost: u256 = 0;
+            if duration == 2 {
+                gem_cost = 1000;
+            } else if duration == 4 {
+                gem_cost = 3000;
+            } else if duration == 8 {
+                gem_cost = 10_000;
+            }
+
+            let valor_vault = ValorVaultABIDispatcher {
+                contract_address: contract_address_const::<VALOR_VAULT_ADDRESS_FELT>(),
+            };
+            valor_vault.stake(caller, (gem_cost * WEI_UNIT));
 
             valor_progress_counter.counter += 1;
             world.write_model(@valor_progress_counter);
@@ -485,17 +504,22 @@ pub mod GameSystem {
             assert(!valor_progress.is_claimed, 'valor returned');
             // TODO verify key
 
+            let gem = GemABIDispatcher {
+                contract_address: contract_address_const::<GEM_ADDRESS_FELT>(),
+            };
+            gem.burn(caller, amount);
             let vrf_provider = IVrfProviderDispatcher { contract_address: self.vrf_address.read() };
             let random_word = vrf_provider.consume_random(Source::Nonce(caller));
             let mut hash = PoseidonTrait::new();
             hash = hash.update_with(random_word);
             hash = hash.update_with(valor_progress.id);
-            let result: felt252 = hash.finalize();
 
             world
                 .emit_event(
                     @BribeValor {
-                        player: caller, progress_id: valor_progress.id, value: result.into(),
+                        player: caller,
+                        progress_id: valor_progress.id,
+                        value: hash.finalize().into(),
                     },
                 );
         }
@@ -529,6 +553,39 @@ pub mod GameSystem {
             let result: felt252 = hash.finalize();
 
             world.emit_event(@OpenChest { player: caller, value: result.into() });
+        }
+
+        fn claim_gem_from_valor(
+            ref self: ContractState,
+            multiplier: u32,
+            progress_id: u128,
+            salt_nonce: u64,
+            key: Array<felt252>,
+        ) {
+            let mut world = self.world(@DEFAULT_NS());
+            let caller = get_caller_address();
+
+            let prover: Prover = world.read_model(SYSTEM_VERSION);
+
+            let claim_valor_gem = ClaimValorGemParams {
+                player: caller,
+                multiplier: multiplier,
+                progress_id: progress_id,
+                salt_nonce: salt_nonce,
+            };
+            let msg_hash = compute_message_claim_valor_gem_hash(@claim_valor_gem, prover.address);
+            let mut used_signature: UsedSignature = world.read_model(msg_hash);
+            assert(!used_signature.is_used, 'signature already used');
+
+            let account: AccountABIDispatcher = AccountABIDispatcher {
+                contract_address: prover.address,
+            };
+
+            assert(account.is_valid_signature(msg_hash, key) == 'VALID', 'Invalid signature');
+            let valor_vault = ValorVaultABIDispatcher {
+                contract_address: contract_address_const::<VALOR_VAULT_ADDRESS_FELT>(),
+            };
+            valor_vault.claim(caller, multiplier);
         }
     }
 }
