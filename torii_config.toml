@@ -41,6 +41,9 @@ transactions = true   # Whether to index world transactions
 contracts = [                # ERC contracts to index
 ]
  
+[sql] 
+historical = ["cf-TrophyProgression"] 
+
 # Events Options
 [events]
 raw = true                  # Whether to index raw events

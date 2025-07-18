@@ -112,6 +112,11 @@ mod ItemSystem {
             for equip in items.span() {
                 let mut equipment: Equipment = world.read_model(*equip.id);
                 assert(equipment.owner.is_zero(), 'equipment already claimed');
+                assert(
+                    (*equip.sub_attributes).len() > 0 && (*equip.sub_attributes).len()
+                        - 1 == (*equip.rarity).into(),
+                    'sub attributes length not match',
+                );
                 equipment.owner = get_caller_address();
                 equipment.skill_link = get_skill_link(*equip.skill_link);
                 equipment.rarity = *equip.rarity;
@@ -216,6 +221,10 @@ mod ItemSystem {
             let mut equipment: Equipment = world.read_model(item_id);
             assert(equipment.owner == caller, 'only owner of equipment');
 
+            assert(
+                sub_attributes.len() > 0 && sub_attributes.len() - 1 == equipment.rarity.into(),
+                'sub attributes length not match',
+            );
             let gem_dispatcher = GemABIDispatcher {
                 contract_address: contract_address_const::<GEM_ADDRESS_FELT>(),
             };

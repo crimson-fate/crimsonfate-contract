@@ -152,6 +152,13 @@ pub mod GameSystem {
             used_signature.is_used = true;
             world.write_model(@used_signature);
 
+            // dungeon fee
+            let dungeon_fee: u256 = 20;
+            let gem_dispatcher = GemABIDispatcher {
+                contract_address: contract_address_const::<GEM_ADDRESS_FELT>(),
+            };
+            gem_dispatcher.burn(player, (dungeon_fee * WEI_UNIT));
+
             let mut player_progress: PlayerProgress = world.read_model(player);
             player_progress.skills = ArrayTrait::new();
             player_progress
